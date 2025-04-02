@@ -1,0 +1,39 @@
+parameters:
+  - name: dockerRegistryServiceConnection
+    type: string
+    default: '5b523a3c-12ff-4b46-8ea1-7acf4ec678f2'
+  - name: imageRepository
+    type: string
+    default: 'jaexoawkazuredevops'
+  - name: containerRegistry
+    type: string
+    default: 'myregistry00.azurecr.io'
+  - name: dockerfilePath
+    type: string
+    default: '$(Build.SourcesDirectory)/Dockerfile'
+  - name: tag
+    type: string
+    default: '$(Build.BuildId)'
+  - name: agentPool
+    type: string
+    default: 'MySelfHostedPool'
+
+stages:
+- stage: Build
+  displayName: Build and push stage
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      name: ${{ parameters.agentPool }}
+    steps:
+    - task: Docker@2
+      displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        containerRegistry: ${{ parameters.dockerRegistryServiceConnection }}
+        repository: '${{ parameters.containerRegistry }}/${{ parameters.imageRepository }}'
+        dockerfile: ${{ parameters.dockerfilePath }}
+        buildContext: '$(Build.SourcesDirectory)'
+        tags: |
+          ${{ parameters.tag }}

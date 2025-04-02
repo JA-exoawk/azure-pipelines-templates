@@ -1,0 +1,36 @@
+parameters:
+  - name: helmChartPath
+    type: string
+    default: '$(Build.SourcesDirectory)/helm/mychart'
+  - name: releaseName
+    type: string
+    default: 'myrelease'
+  - name: baseValuesFile
+    type: string
+    default: '$(Build.SourcesDirectory)/helm/values.yaml'
+  - name: envValuesFile
+    type: string
+    default: '$(Build.SourcesDirectory)/helm/values-dev.yaml'
+  - name: agentPool
+    type: string
+    default: 'MyLocalPool'
+  - name: namespace
+    type: string
+    default: 'staging'
+    
+
+stages:
+- stage: Deploy_${{ parameters.namespace }}
+  displayName: "Deploy ${{ parameters.namespace }}"
+  jobs:
+  - job: Deploy
+    displayName: "Deploy"
+    pool:
+      name: ${{ parameters.agentPool }}
+    steps:
+    - script: |
+         helm upgrade --install ${{ parameters.releaseName }} ${{ parameters.helmChartPath }} \
+           -f ${{ parameters.baseValuesFile }} \
+           -f ${{ parameters.envValuesFile }} \
+           --namespace ${{ parameters.namespace }} --create-namespace
+      displayName: "Helm Deploy"

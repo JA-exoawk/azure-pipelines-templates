@@ -1,0 +1,39 @@
+parameters:
+  - name: containerRegistry
+    type: string
+    default: 'myregistry00.azurecr.io'
+  - name: containerImage
+    type: string
+    default: 'myregistry00.azurecr.io/jaexoawkazuredevops'
+  - name: severity
+    type: string
+    default: 'HIGH,CRITICAL'
+  - name: trivyVersion
+    type: string
+    default: '0.61.0'
+  - name: agentPool
+    type: string
+    default: 'MySelfHostedPool'
+  - name: tag
+    type: string
+    default: '$(Build.BuildId)'
+
+stages:
+- stage: Scan
+  displayName: "Scan Docker Image Stage"
+  jobs:
+  - job: Scan
+    displayName: "Scan Docker Image"
+    pool:
+      name: ${{ parameters.agentPool }}
+    steps:
+    - task: CmdLine@2
+      displayName: "Scan Docker Image with Trivy"
+      inputs: 
+        script: |
+          echo "Installing Trivy..."
+          wget -qO- https://github.com/aquasecurity/trivy/releases/download/v0.61.0/trivy_0.61.0_Linux-64bit.tar.gz | tar xz
+          sudo mv trivy /usr/local/bin/
+          trivy -v
+          echo "Scanning image: ${{ parameters.containerImage }}"
+          trivy image --exit-code 1 --severity ${{ parameters.severity }} ${{ parameters.containerImage }}
