@@ -36,7 +36,7 @@ stages:
            -f ${{ parameters.envValuesFile }} \
            --namespace ${{ parameters.namespace }} --create-namespace \
            --atomic \
-           --timeout  \
-           --wait ${{ parameters.timeout }} \
+           --timeout ${{ parameters.timeout }} \
+           --wait  \
            --debug
       displayName: "Helm Deploy"
