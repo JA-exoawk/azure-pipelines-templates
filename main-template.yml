@@ -47,9 +47,7 @@ parameters:
     default: 5m    
 
 trigger:
-  branches:
-    include:
-      - main
+  - main
 
 stages:
 - template: build-push-template.yml
