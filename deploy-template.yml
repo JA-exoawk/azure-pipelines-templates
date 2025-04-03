@@ -19,7 +19,7 @@ parameters:
     default: 'staging'
   - name: timeout
     type: string
-    default: '5m'  
+    default: 5m  
 
 stages:
 - stage: Deploy_${{ parameters.namespace }}
