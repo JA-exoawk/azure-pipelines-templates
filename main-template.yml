@@ -45,10 +45,7 @@ parameters:
   - name: timeout
     type: string
     default: 5m    
-
-trigger:
-  - main
-
+    
 stages:
 - template: build-push-template.yml
   parameters:
