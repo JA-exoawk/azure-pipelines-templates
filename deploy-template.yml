@@ -17,7 +17,9 @@ parameters:
   - name: namespace
     type: string
     default: 'staging'
-    
+  - name: timeout
+    type: string
+    default: '5m'  
 
 stages:
 - stage: Deploy_${{ parameters.namespace }}
@@ -32,5 +34,9 @@ stages:
          helm upgrade --install ${{ parameters.releaseName }} ${{ parameters.helmChartPath }} \
            -f ${{ parameters.baseValuesFile }} \
            -f ${{ parameters.envValuesFile }} \
-           --namespace ${{ parameters.namespace }} --create-namespace
+           --namespace ${{ parameters.namespace }} --create-namespace \
+           --atomic \
+           --timeout  \
+           --wait ${{ parameters.timeout }} \
+           --debug
       displayName: "Helm Deploy"

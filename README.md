@@ -48,7 +48,8 @@ stages:
     baseValuesFile: '$(Build.SourcesDirectory)/env-files/values.yaml'
     envValuesFile: '$(Build.SourcesDirectory)/env-files/values-dev.yaml'
     namespace: 'dev'
-    agentPool: 'MyLocalPool'      
+    agentPool: 'MyLocalPool'
+    timeout: '5m'      
 
 - template: deploy-template.yml@myTemplatesRepo  
   parameters:
@@ -57,7 +58,8 @@ stages:
     baseValuesFile: '$(Build.SourcesDirectory)/env-files/values.yaml'
     envValuesFile: '$(Build.SourcesDirectory)/env-files/values-staging.yaml'
     namespace: 'staging'
-    agentPool: 'MyLocalPool'     
+    agentPool: 'MyLocalPool'
+    timeout: '5m'  
 
 - template: deploy-template.yml@myTemplatesRepo  
   parameters:
@@ -67,3 +69,4 @@ stages:
     envValuesFile: '$(Build.SourcesDirectory)/env-files/values-prod.yaml'
     namespace: 'prod'
     agentPool: 'MyLocalPool'
+    timeout: '5m'

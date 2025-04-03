@@ -1,0 +1,85 @@
+parameters:
+  - name: deployEnvironments
+    type: object
+    default:
+      - name: dev
+        valuesFile: '$(Build.SourcesDirectory)/helm/values-dev.yaml'
+        timeout: '5m'
+        agentPool: MySelfHostedPool
+      - name: staging
+        valuesFile: '$(Build.SourcesDirectory)/helm/values-staging.yaml'
+        timeout: '10m'
+        agentPool: MySelfHostedPool
+      - name: prod
+        valuesFile: '$(Build.SourcesDirectory)/helm/values-prod.yaml'
+        timeout: '15m'
+        agentPool: MySelfHostedPool
+
+  - name: dockerRegistryServiceConnection
+    type: string
+    default: 5x4m5pl3-1ff-2fa3-dasd2-7acf4ec678f2
+  - name: imageRepository
+    type: string
+    default: myImage
+  - name: containerRegistry
+    type: string
+    default: myregistry.azurecr.io
+  - name: dockerfilePath
+    type: string 
+    default: $(Build.SourcesDirectory)/Dockerfile
+  - name: tag
+    type: string
+    default: $(Build.BuildId)'
+  - name: baseAgentPool
+    type: string
+    default: MySelfHostedPool
+  - name: severity
+    type: string 
+    default: 'HIGH,CRITICAL'
+  - name: trivyVersion
+    type: string
+    default: 0.61.0'
+  - name: releaseName
+    type: string
+    default: myRelease
+  - name: timeout
+    type: string
+    default: 5m    
+
+trigger:
+  branches:
+    include:
+      - main
+
+stages:
+- template: build-push-template.yml
+  parameters:
+    dockerRegistryServiceConnection: ${{ parameters.dockerRegistryServiceConnection }}
+    imageRepository: ${{ parameters.imageRepository }}
+    containerRegistry: ${{ parameters.containerRegistry }}
+    dockerfilePath: ${{ parameters.dockerfilePath }}
+    tag: ${{ parameters.tag }}
+    agentPool: ${{ parameters.baseAgentPool}}
+
+- template: scan-template.yml
+  parameters:
+    containerRegistry: ${{ parameters.containerRegistry }}
+    containerImage: ${{ parameters.imageRepository }}
+    severity: ${{ parameters.severity}}
+    trivyVersion: ${{ parameters.trivyVersion }}
+    tag: ${{ parameters.tag }}
+    agentPool: ${{ parameters.baseAgentPool}}
+
+
+- ${{ each env in parameters.deployEnvironments }}:
+  - template: deploy-template.yml
+    parameters:
+      helmChartPath: '$(Build.SourcesDirectory)/helm/mychart'
+      releaseName: ${{ parameters.releaseName}}
+      baseValuesFile: '$(Build.SourcesDirectory)/helm/values.yaml'
+      envValuesFile: ${{ env.valuesFile }}
+      agentPool: ${{ env.agentPool}}
+      namespace: ${{ env.name }}
+      timeout: ${{ env.timeout }}
+
+
