@@ -4,7 +4,7 @@ parameters:
     default: 'myregistry00.azurecr.io'
   - name: containerImage
     type: string
-    default: 'myregistry00.azurecr.io/jaexoawkazuredevops'
+    default: 'jaexoawkazuredevops'
   - name: severity
     type: string
     default: 'HIGH,CRITICAL'
@@ -36,4 +36,4 @@ stages:
           sudo mv trivy /usr/local/bin/
           trivy -v
           echo "Scanning image: ${{ parameters.containerImage }}"
-          trivy image --exit-code 1 --severity ${{ parameters.severity }} ${{ parameters.containerImage }}
+          trivy image --exit-code 1 --severity ${{ parameters.severity }} ${{ parameters.containerRegistry }}/${{ parameters.containerImage }}
