@@ -5,15 +5,15 @@ parameters:
       - name: dev
         valuesFile: '$(Build.SourcesDirectory)/helm/values-dev.yaml'
         timeout: '5m'
-        agentPool: MySelfHostedPool
+        agentPool: MyLocalPool
       - name: staging
         valuesFile: '$(Build.SourcesDirectory)/helm/values-staging.yaml'
         timeout: '10m'
-        agentPool: MySelfHostedPool
+        agentPool: MyLocalPool
       - name: prod
         valuesFile: '$(Build.SourcesDirectory)/helm/values-prod.yaml'
         timeout: '15m'
-        agentPool: MySelfHostedPool
+        agentPool: MyLocalPool
 
   - name: dockerRegistryServiceConnection
     type: string
@@ -23,7 +23,7 @@ parameters:
     default: myImage
   - name: containerRegistry
     type: string
-    default: myregistry.azurecr.io
+    default: myregistry00.azurecr.io
   - name: dockerfilePath
     type: string 
     default: $(Build.SourcesDirectory)/Dockerfile
@@ -32,7 +32,7 @@ parameters:
     default: $(Build.BuildId)'
   - name: baseAgentPool
     type: string
-    default: MySelfHostedPool
+    default: MyLocalPool
   - name: severity
     type: string 
     default: 'HIGH,CRITICAL'
