@@ -13,12 +13,6 @@ stages:
         pool:
           name: "MyLocalPool"
         steps:
-          # Ensure the correct Python version is used
-          - task: UsePythonVersion@0
-            inputs:
-              versionSpec: ${{ parameters.pythonVersion }}
-            displayName: 'Use Python ${{ parameters.pythonVersion }}'
-          
           # Install Poetry using the official installer script
           - script: |
               curl -sSL https://install.python-poetry.org | python3 -
