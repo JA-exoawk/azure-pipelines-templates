@@ -4,7 +4,7 @@ parameters:
     default: MyFeed
   - name: pythonVersion
     type: string
-    default: '3.12'
+    default: '3.8.10'
 
 stages:
   - stage: BuildAndPush
