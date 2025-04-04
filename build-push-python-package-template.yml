@@ -12,9 +12,6 @@ stages:
       - job: BuildJob
         pool:
           name: "MyLocalPool"
-        # Set environment variables for the whole job so that Poetry’s bin directory is available in all steps
-        env:
-          PATH: $HOME/.local/bin:$(PATH)
         steps:
           # Ensure the correct Python version is used
           - task: UsePythonVersion@0
