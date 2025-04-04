@@ -12,7 +12,7 @@ stages:
       - job: BuildJob
         pool:
           name: "MyLocalPool"
-        env:
+        variables::
           PATH: "$HOME/.local/bin:$(PATH)"
         steps:
           # Update apt and install pip (and python3-distutils)
