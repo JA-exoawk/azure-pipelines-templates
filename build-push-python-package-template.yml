@@ -6,6 +6,9 @@ parameters:
     type: string
     default: '3.12'
 
+pool:
+  name: 'MyLocalPool'
+
 steps:
   # Use the specified Python version
   - task: UsePythonVersion@0
