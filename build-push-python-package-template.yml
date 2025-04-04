@@ -13,6 +13,11 @@ stages:
         pool:
           name: "MyLocalPool"
         steps:
+          # Bootstrap pip using Python's built-in ensurepip (does not rely on apt or an existing pip)
+          - script: |
+              python3 -m ensurepip --upgrade
+              pip3 --version
+            displayName: 'Bootstrap pip with ensurepip'
           # Install Poetry 
           - script: |
               curl -sSL https://install.python-poetry.org | python3 -
