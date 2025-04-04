@@ -13,9 +13,11 @@ stages:
         pool:
           name: "MyLocalPool"
         steps:
-          # Install Poetry via pip
+          # Install Poetry 
           - script: |
-              pip install poetry
+              curl -sSL https://install.python-poetry.org | python3 -
+              export PATH="$HOME/.local/bin:$PATH"
+              poetry --version
             displayName: 'Install Poetry'
 
           ## Configure Poetry to use your Azure Artifacts repository and set credentials
