@@ -6,36 +6,39 @@ parameters:
     type: string
     default: '3.12'
 
-pool:
-  name: 'MyLocalPool'
+stages:
+  - stage: BuildAndPush
+    jobs:
+      - job: BuildJob
+        pool:
+          name: "MyLocalPool"
+        steps:
+          # Use the specified Python version
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: ${{ parameters.pythonVersion }}
+            displayName: 'Use Python ${{ parameters.pythonVersion }}'
 
-steps:
-  # Use the specified Python version
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: ${{ parameters.pythonVersion }}
-    displayName: 'Use Python ${{ parameters.pythonVersion }}'
+          # Install Poetry via pip
+          - script: |
+              pip install poetry
+            displayName: 'Install Poetry'
 
-  # Install Poetry using pip
-  - script: |
-      pip install poetry
-    displayName: 'Install Poetry'
+          ## Configure Poetry to use your Azure Artifacts repository and set credentials
+          - script: |
+              poetry config repositories.azure index-url=https://pkgs.dev.azure.com/exoawktest/5ce4f0b1-c4d9-4069-9782-60242c3d1b35/_packaging/${{ parameters.feed }}/pypi/simple/
+              poetry config http-basic.azure $(AZURE_ARTIFACT_USERNAME) $(AZURE_ARTIFACT_PASSWORD)
+            displayName: 'Configure Poetry Repository'
 
-  # Configure Poetry to use your Azure Artifacts repository and set credentials
-  - script: |
-      poetry config repositories.azure index-url=https://pkgs.dev.azure.com/exoawktest/5ce4f0b1-c4d9-4069-9782-60242c3d1b35/_packaging/${{ parameters.feed }}/pypi/simple/
-      poetry config http-basic.azure $(AZURE_ARTIFACT_USERNAME) $(AZURE_ARTIFACT_PASSWORD)
-    displayName: 'Configure Poetry Repository'
+          # Build the package using Poetry
+          - script: |
+              poetry build
+            displayName: 'Build Package'
 
-  # Build the package using Poetry
-  - script: |
-      poetry build
-    displayName: 'Build Package'
-
-  # Publish the package to Azure Artifacts using Poetry
-  - script: |
-      poetry publish -r azure --build
-    displayName: 'Publish Package to Azure Artifacts'
-    env:
-      AZURE_ARTIFACT_USERNAME: $(AZURE_ARTIFACT_USERNAME)
-      AZURE_ARTIFACT_PASSWORD: $(AZURE_ARTIFACT_PASSWORD)
+          # Publish the package to Azure Artifacts using Poetry
+          - script: |
+              poetry publish -r azure --build
+            displayName: 'Publish Package to Azure Artifacts'
+            env:
+              AZURE_ARTIFACT_USERNAME: $(AZURE_ARTIFACT_USERNAME)
+              AZURE_ARTIFACT_PASSWORD: $(AZURE_ARTIFACT_PASSWORD)
