@@ -1,16 +1,10 @@
 parameters:
-  - name: agentPool
-    type: string
-    default: 'MyLocalPool'
   - name: feed
     type: string
     default: MyFeed
   - name: pythonVersion
     type: string
     default: '3.12'
-
-pool:
-  name: ${{ parameters.agentPool }}
 
 steps:
   # Use the specified Python version
