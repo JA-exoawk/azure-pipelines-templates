@@ -33,6 +33,9 @@ stages:
           - script: pip install keyring artifacts-keyring
             displayName: Install artifacts-keyring
 
+          - script: echo "##vso[task.prependpath]$HOME/.local/bin"
+            displayName: Add keyring to PATH
+
           - script: |
               poetry config repositories.azure index-url=https://pkgs.dev.azure.com/exoawktest/5ce4f0b1-c4d9-4069-9782-60242c3d1b35/_packaging/${{ parameters.feed }}/pypi/simple/
               poetry config http-basic.azure $(AZURE_ARTIFACT_USERNAME) $(AZURE_ARTIFACT_PASSWORD)
