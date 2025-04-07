@@ -1,10 +1,11 @@
 parameters:
-  - name: feed
+  - name: repository
     type: string
-    default: MyFeed
+    default: https://pkgs.dev.azure.com/exoawktest/5ce4f0b1-c4d9-4069-9782-60242c3d1b35/_packaging/MyFeed/pypi/upload/
   - name: pythonVersion
     type: string
     default: '3.8.10'
+
 
 stages:
   - stage: BuildAndPush
@@ -22,16 +23,16 @@ stages:
 
           - script: |
               python3 -m venv venv
+            displayName: 'Create virtual environment'
 
           - script: |
               source venv/bin/activate
               pip install poetry keyring artifacts-keyring
             displayName: 'Install Poetry keyring artifacts-keyring with pip'
 
-
           - script: |
               source venv/bin/activate
-              poetry config repositories.azure https://pkgs.dev.azure.com/exoawktest/5ce4f0b1-c4d9-4069-9782-60242c3d1b35/_packaging/${{ parameters.feed }}/pypi/upload/
+              poetry config repositories.azure ${{ parameters.repository }}
             displayName: 'Configure Poetry Repository'
 
           # Build the package using Poetry (creates source and wheel distributions)
