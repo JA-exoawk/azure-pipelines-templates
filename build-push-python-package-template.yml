@@ -26,13 +26,12 @@ stages:
               export PATH="$HOME/.local/bin:$PATH"
               poetry --version
             displayName: 'Install Poetry with pip'
-          # Configure Poetry to use your Azure Artifacts repository and set credentials
-
-          - script: pip install keyring artifacts-keyring
-            displayName: Install artifacts-keyring
 
           - script: echo "##vso[task.prependpath]$HOME/.local/bin"
             displayName: Add poetry to PATH
+
+          - script: pip install keyring artifacts-keyring
+            displayName: Install artifacts-keyring
 
           - script: |
               poetry config repositories.azure index-url=https://pkgs.dev.azure.com/exoawktest/5ce4f0b1-c4d9-4069-9782-60242c3d1b35/_packaging/${{ parameters.feed }}/pypi/simple/
@@ -46,7 +45,7 @@ stages:
 
           # Publish the package to Azure Artifacts using Poetry
           - script: |
-              poetry publish -r https://pkgs.dev.azure.com/exoawktest/5ce4f0b1-c4d9-4069-9782-60242c3d1b35/_packaging/${{ parameters.feed }}/pypi/simple/ -u  $(AZURE_ARTIFACT_USERNAME) -p $(AZURE_ARTIFACT_PASSWORD)
+              poetry publish -r azure -u  $(AZURE_ARTIFACT_USERNAME) -p $(AZURE_ARTIFACT_PASSWORD)
             displayName: 'Publish Package to Azure Artifacts'
             env:
               AZURE_ARTIFACT_USERNAME: $(AZURE_ARTIFACT_USERNAME)
