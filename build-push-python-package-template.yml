@@ -16,8 +16,8 @@ stages:
           # Update apt and install pip (and python3-distutils)
           - script: |
               sudo apt-get update
-              sudo apt-get install -y python3-pip
-              pip3 --version
+              sudo apt-get install -y python3-pip python3.8-venv
+              pip --version
             displayName: 'Install pip with apt'
 
           - script: |
