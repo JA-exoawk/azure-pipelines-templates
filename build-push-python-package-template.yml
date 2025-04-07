@@ -28,6 +28,9 @@ stages:
             displayName: 'Install Poetry with pip'
           # Configure Poetry to use your Azure Artifacts repository and set credentials
 
+          - script: pip install keyring artifacts-keyring
+            displayName: Install artifacts-keyring
+
           - script: echo "##vso[task.prependpath]$HOME/.local/bin"
             displayName: Add poetry to PATH
 
