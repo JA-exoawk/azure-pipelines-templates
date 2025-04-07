@@ -45,7 +45,7 @@ stages:
 
           - script: |
               source venv/bin/activate
-              poetry config repositories.azure index-url=https://pkgs.dev.azure.com/exoawktest/5ce4f0b1-c4d9-4069-9782-60242c3d1b35/_packaging/${{ parameters.feed }}/pypi/simple/
+              poetry config repositories.azure https://pkgs.dev.azure.com/exoawktest/5ce4f0b1-c4d9-4069-9782-60242c3d1b35/_packaging/${{ parameters.feed }}/pypi/simple/
             displayName: 'Configure Poetry Repository'
 
           # Build the package using Poetry (creates source and wheel distributions)
