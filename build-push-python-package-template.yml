@@ -5,37 +5,49 @@ parameters:
   - name: pythonVersion
     type: string
     default: '3.8.10'
-
+  - name: pool
+    type: string
+    default: MyLocalPool
 
 stages:
   - stage: BuildAndPush
     jobs:
       - job: BuildJob
         pool:
-          name: "MyLocalPool"
+          name: ${{ parameters.pool }}
         steps:
-          # Update apt and install pip (and python3-distutils)
+          # Use the specified Python version on the self-hosted agent
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: ${{ parameters.pythonVersion }}
+            displayName: 'Use Python ${{ parameters.pythonVersion }}'
+
+          # Update apt and install pip and virtualenv tools
           - script: |
               sudo apt-get update
-              sudo apt-get install -y python3-pip python3.8-venv
+              sudo apt-get install -y python3-pip python3-venv
               pip --version
             displayName: 'Install pip with apt'
 
+          # Create the virtual environment using the activated Python version
           - script: |
-              python3 -m venv venv
+              python -m venv venv
             displayName: 'Create virtual environment'
 
+          # Activate virtualenv and install Poetry and keyring packages
           - script: |
               source venv/bin/activate
               pip install poetry keyring artifacts-keyring
-            displayName: 'Install Poetry keyring artifacts-keyring with pip'
+              poetry --version
+            displayName: 'Install Poetry and keyring packages with pip'
 
+          # Configure Poetry to use the Azure Artifacts repository for publishing
           - script: |
               source venv/bin/activate
               poetry config repositories.azure ${{ parameters.repository }}
             displayName: 'Configure Poetry Repository'
 
-          # Build the package using Poetry (creates source and wheel distributions)
+          # Build the package using Poetry
           - script: |
               source venv/bin/activate
               poetry build
@@ -44,7 +56,7 @@ stages:
           # Publish the package to Azure Artifacts using Poetry
           - script: |
               source venv/bin/activate
-              poetry publish -r azure -u  $(AZURE_ARTIFACT_USERNAME) -p $(AZURE_ARTIFACT_PASSWORD)
+              poetry publish -r azure -u $(AZURE_ARTIFACT_USERNAME) -p $(AZURE_ARTIFACT_PASSWORD)
             displayName: 'Publish Package to Azure Artifacts'
             env:
               AZURE_ARTIFACT_USERNAME: $(AZURE_ARTIFACT_USERNAME)
