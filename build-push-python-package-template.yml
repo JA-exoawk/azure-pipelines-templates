@@ -16,44 +16,37 @@ stages:
         pool:
           name: ${{ parameters.pool }}
         steps:
-          # Use the specified Python version on the self-hosted agent
           - task: UsePythonVersion@0
             inputs:
               versionSpec: ${{ parameters.pythonVersion }}
             displayName: 'Use Python ${{ parameters.pythonVersion }}'
 
-          # Update apt and install pip and virtualenv tools
           - script: |
               sudo apt-get update
               sudo apt-get install -y python3-pip python3-venv
               pip --version
             displayName: 'Install pip with apt'
 
-          # Create the virtual environment using the activated Python version
           - script: |
               python -m venv venv
             displayName: 'Create virtual environment'
 
-          # Activate virtualenv and install Poetry and keyring packages
           - script: |
               source venv/bin/activate
               pip install poetry keyring artifacts-keyring
               poetry --version
             displayName: 'Install Poetry and keyring packages with pip'
 
-          # Configure Poetry to use the Azure Artifacts repository for publishing
           - script: |
               source venv/bin/activate
               poetry config repositories.azure ${{ parameters.repository }}
             displayName: 'Configure Poetry Repository'
 
-          # Build the package using Poetry
           - script: |
               source venv/bin/activate
               poetry build
             displayName: 'Build Package'
 
-          # Publish the package to Azure Artifacts using Poetry
           - script: |
               source venv/bin/activate
               poetry publish -r azure -u $(AZURE_ARTIFACT_USERNAME) -p $(AZURE_ARTIFACT_PASSWORD)
